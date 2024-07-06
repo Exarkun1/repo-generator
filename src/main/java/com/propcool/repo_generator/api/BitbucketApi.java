@@ -2,6 +2,7 @@ package com.propcool.repo_generator.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
+import com.propcool.repo_generator.utils.Remote;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,20 +19,20 @@ import java.util.Map;
  * */
 @Component
 public class BitbucketApi extends AbstractGitApi {
-    @Value("${bitbucket.workspace}")
-    private String workspace;
-
     @Value("${bitbucket.username}")
     private String username;
 
     @Value("${bitbucket.password}")
     private String password;
 
+    @Value("${bitbucket.workspace}")
+    private String workspace;
+
     private static final String CREATE_REPO_URL = "https://api.bitbucket.org/2.0/repositories";
 
     @Autowired
     public BitbucketApi(GitUtil gitUtil, RestTemplate restTemplate, ObjectMapper objectMapper) {
-        super(gitUtil, restTemplate, objectMapper);
+        super(gitUtil, restTemplate, objectMapper, Remote.BITBUCKET);
     }
 
     @Override

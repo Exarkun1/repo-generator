@@ -1,8 +1,7 @@
 package com.propcool.repo_generator.services;
 
 import com.propcool.repo_generator.api.GitApi;
-import com.propcool.repo_generator.utils.GitTable;
-import lombok.RequiredArgsConstructor;
+import com.propcool.repo_generator.utils.Remote;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -19,19 +18,16 @@ import java.util.stream.Stream;
  * Сервис для взаимодействия с целевым облачным сервисом
  * */
 @Service
-@RequiredArgsConstructor
 public class TargetGitService {
     @Value("${directory}")
     private String directory;
 
-    private final GitTable gitTable;
-
-    public void updateRepository(String repoName, String serviceName) {
+    public void updateRepository(String repoName, Remote remote) {
         File repoPath = new File(directory + "/" + repoName);
-        GitApi gitApi = gitTable.get(serviceName);
+        GitApi gitApi = remote.getGitApi();
         try(Git git = Git.open(repoPath)) {
             List<String> services = git.remoteList().call().stream().map(RemoteConfig::getName).toList();
-            if(!services.contains(serviceName)) {
+            if(!services.contains(remote.getRemoteName())) {
                 gitApi.createCloudRepository(repoName);
                 gitApi.addRemote(repoName, repoPath);
             }
@@ -41,8 +37,8 @@ public class TargetGitService {
         }
     }
 
-    public void updateAllRepositories(String serviceName) {
+    public void updateAllRepositories(Remote remote) {
         Stream.of(Objects.requireNonNull(new File(directory).listFiles()))
-                .map(File::getName).forEach(repoName -> updateRepository(repoName, serviceName));
+                .map(File::getName).forEach(repoName -> updateRepository(repoName, remote));
     }
 }

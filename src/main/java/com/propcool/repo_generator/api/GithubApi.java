@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
+import com.propcool.repo_generator.utils.Remote;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class GithubApi extends AbstractGitApi {
 
     @Autowired
     public GithubApi(GitUtil gitUtil, RestTemplate restTemplate, ObjectMapper objectMapper) {
-        super(gitUtil, restTemplate, objectMapper);
+        super(gitUtil, restTemplate, objectMapper, Remote.GITHUB);
     }
 
     @Override

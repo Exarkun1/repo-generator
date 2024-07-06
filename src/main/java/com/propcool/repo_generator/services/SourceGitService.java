@@ -1,8 +1,7 @@
 package com.propcool.repo_generator.services;
 
 import com.propcool.repo_generator.api.GitApi;
-import com.propcool.repo_generator.utils.GitTable;
-import lombok.RequiredArgsConstructor;
+import com.propcool.repo_generator.utils.Remote;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +12,17 @@ import java.util.List;
  * Сервис для взаимодействия с облачным сервисом источником
  * */
 @Service
-@RequiredArgsConstructor
 public class SourceGitService {
     @Value("${directory}")
     private String directory;
 
-    private final GitTable gitTable;
-
-    public List<String> getAllRepositories(String serviceName) {
-        return gitTable.get(serviceName).getAllCloudRepositories();
+    public List<String> getAllRepositories(Remote remote) {
+        return remote.getGitApi().getAllCloudRepositories();
     }
 
-    public void updateRepository(String repoName, String serviceName) {
+    public void updateRepository(String repoName, Remote remote) {
         File repoPath = new File(directory + "/" + repoName);
-        GitApi gitApi = gitTable.get(serviceName);
+        GitApi gitApi = remote.getGitApi();
         if(!repoPath.exists()) {
             gitApi.cloneRepository(repoName, repoPath);
         } else {
@@ -34,10 +30,10 @@ public class SourceGitService {
         }
     }
 
-    public void updateAllRepositories(String serviceName) {
-        List<String> repositories = getAllRepositories(serviceName);
+    public void updateAllRepositories(Remote remote) {
+        List<String> repositories = getAllRepositories(remote);
         for(var repoName : repositories) {
-            updateRepository(repoName, serviceName);
+            updateRepository(repoName, remote);
         }
     }
 }

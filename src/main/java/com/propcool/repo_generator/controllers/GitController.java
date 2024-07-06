@@ -2,6 +2,7 @@ package com.propcool.repo_generator.controllers;
 
 import com.propcool.repo_generator.services.SourceGitService;
 import com.propcool.repo_generator.services.TargetGitService;
+import com.propcool.repo_generator.utils.Remote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,26 +21,26 @@ public class GitController {
 
     @GetMapping("/repositories")
     public List<String> repositories() {
-        return sourceGitService.getAllRepositories("github");
+        return sourceGitService.getAllRepositories(Remote.GITHUB);
     }
 
     @PostMapping("/update/{repoName}/local")
     public void updateLocalRepository(@PathVariable("repoName") String repoName) {
-        sourceGitService.updateRepository(repoName, "github");
+        sourceGitService.updateRepository(repoName, Remote.GITHUB);
     }
 
     @PostMapping("/update-all/local")
     public void updateAllLocalRepositories() {
-        sourceGitService.updateAllRepositories("github");
+        sourceGitService.updateAllRepositories(Remote.GITHUB);
     }
 
     @PostMapping("/update/{repoName}/cloud")
     public void updateCloudRepository(@PathVariable("repoName") String repoName) {
-        targetGitService.updateRepository(repoName, "bitbucket");
+        targetGitService.updateRepository(repoName, Remote.BITBUCKET);
     }
 
     @PostMapping("/update-all/cloud")
     public void updateAllCloudRepositories() {
-        targetGitService.updateAllRepositories("bitbucket");
+        targetGitService.updateAllRepositories(Remote.BITBUCKET);
     }
 }
