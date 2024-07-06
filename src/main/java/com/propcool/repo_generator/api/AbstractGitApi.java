@@ -1,9 +1,11 @@
 package com.propcool.repo_generator.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 
@@ -13,15 +15,24 @@ import java.io.File;
  * */
 @RequiredArgsConstructor
 public abstract class AbstractGitApi implements GitApi {
+    @Setter
+    protected String remoteName;
+
+    protected final GitUtil gitUtil;
+
+    protected final RestTemplate restTemplate;
+
+    protected final ObjectMapper objectMapper;
+
     @Override
     public void cloneRepository(String repoName, File repoPath) {
-        CredentialsProvider cp = gitUtil.credentialsProvider(username(), password());
+        CredentialsProvider cp = credentialsProvider();
         gitUtil.cloneRepository(repoPath, remoteUrl(repoName), remoteName, cp);
     }
 
     @Override
     public void pullRepository(File repoPath) {
-        CredentialsProvider cp = gitUtil.credentialsProvider(username(), password());
+        CredentialsProvider cp = credentialsProvider();
         gitUtil.pullRepository(repoPath, remoteName, cp);
     }
 
@@ -32,18 +43,11 @@ public abstract class AbstractGitApi implements GitApi {
 
     @Override
     public void pushRepository(File repoPath) {
-        CredentialsProvider cp = gitUtil.credentialsProvider(username(), password());
+        CredentialsProvider cp = credentialsProvider();
         gitUtil.pushRepository(repoPath, remoteName, cp);
     }
 
     protected abstract String remoteUrl(String repoName);
 
-    protected abstract String username();
-
-    protected abstract String password();
-
-    @Setter
-    protected String remoteName;
-
-    protected final GitUtil gitUtil;
+    protected abstract CredentialsProvider credentialsProvider();
 }

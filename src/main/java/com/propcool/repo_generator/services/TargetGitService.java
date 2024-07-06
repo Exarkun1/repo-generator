@@ -21,6 +21,11 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class TargetGitService {
+    @Value("${directory}")
+    private String directory;
+
+    private final GitTable gitTable;
+
     public void updateRepository(String repoName, String serviceName) {
         File repoPath = new File(directory + "/" + repoName);
         GitApi gitApi = gitTable.get(serviceName);
@@ -40,9 +45,4 @@ public class TargetGitService {
         Stream.of(Objects.requireNonNull(new File(directory).listFiles()))
                 .map(File::getName).forEach(repoName -> updateRepository(repoName, serviceName));
     }
-
-    @Value("${directory}")
-    private String directory;
-
-    private final GitTable gitTable;
 }

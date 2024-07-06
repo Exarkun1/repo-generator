@@ -23,12 +23,6 @@ public class GitUtil {
         return new UsernamePasswordCredentialsProvider(username, password);
     }
 
-    public List<String> branchNames(Collection<Ref> branches) {
-        return branches
-                .stream().map(Ref::getName)
-                .map(s -> s.replaceAll("[A-Za-z]+/", "")).toList();
-    }
-
     public Collection<Ref> branchesByRemote(File repoPath, String remoteName, CredentialsProvider cp) {
         try(Git git = Git.open(repoPath)) {
             return git.lsRemote()
@@ -104,5 +98,11 @@ public class GitUtil {
                     .call();
         }
         git.checkout().setName(startBranch).call();
+    }
+
+    private List<String> branchNames(Collection<Ref> branches) {
+        return branches
+                .stream().map(Ref::getName)
+                .map(s -> s.replaceAll("\\w+/", "")).toList();
     }
 }

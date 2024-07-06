@@ -14,6 +14,10 @@ import java.util.List;
 @RequestMapping("/git")
 @RequiredArgsConstructor
 public class GitController {
+    private final SourceGitService sourceGitService;
+
+    private final TargetGitService targetGitService;
+
     @GetMapping("/repositories")
     public List<String> repositories() {
         return sourceGitService.getAllRepositories("github");
@@ -38,8 +42,4 @@ public class GitController {
     public void updateAllCloudRepositories() {
         targetGitService.updateAllRepositories("bitbucket");
     }
-
-    private final SourceGitService sourceGitService;
-
-    private final TargetGitService targetGitService;
 }

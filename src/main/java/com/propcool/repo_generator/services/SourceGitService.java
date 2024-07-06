@@ -15,6 +15,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SourceGitService {
+    @Value("${directory}")
+    private String directory;
+
+    private final GitTable gitTable;
+
     public List<String> getAllRepositories(String serviceName) {
         return gitTable.get(serviceName).getAllCloudRepositories();
     }
@@ -35,9 +40,4 @@ public class SourceGitService {
             updateRepository(repoName, serviceName);
         }
     }
-
-    @Value("${directory}")
-    private String directory;
-
-    private final GitTable gitTable;
 }

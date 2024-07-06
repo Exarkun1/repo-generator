@@ -4,6 +4,7 @@ import com.propcool.repo_generator.api.AbstractGitApi;
 import com.propcool.repo_generator.utils.GitTable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Set;
 
@@ -22,5 +23,10 @@ public class GitConfiguration {
             table.put(name, gitApi);
         }
         return table;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

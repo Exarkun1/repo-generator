@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,22 +21,33 @@ import java.util.List;
  * */
 @Component
 public class GithubApi extends AbstractGitApi {
+    @Value("${github.username}")
+    private String username;
+
+    @Value("${github.password}")
+    private String password;
+
+    private static final String ALL_REPOS_URL = "https://api.github.com/user/repos";
+
+    @Autowired
+    public GithubApi(GitUtil gitUtil, RestTemplate restTemplate, ObjectMapper objectMapper) {
+        super(gitUtil, restTemplate, objectMapper);
+    }
+
     @Override
     public List<String> getAllCloudRepositories() {
         try {
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setBasicAuth(username, password);
             HttpEntity<String> request = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(
-                    allReposUrl,
+                    ALL_REPOS_URL,
                     HttpMethod.GET,
                     request,
                     String.class
             );
             String responseBody = response.getBody();
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(responseBody);
+            JsonNode root = objectMapper.readTree(responseBody);
             return root.findValuesAsText("name");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -53,25 +65,7 @@ public class GithubApi extends AbstractGitApi {
     }
 
     @Override
-    protected String username() {
-        return username;
+    protected CredentialsProvider credentialsProvider() {
+        return gitUtil.credentialsProvider(username, password);
     }
-
-    @Override
-    protected String password() {
-        return password;
-    }
-
-    @Autowired
-    public GithubApi(GitUtil gitUtil) {
-        super(gitUtil);
-    }
-
-    @Value("${github.username}")
-    private String username;
-
-    @Value("${github.password}")
-    private String password;
-
-    private final String allReposUrl = "https://api.github.com/user/repos";
 }
