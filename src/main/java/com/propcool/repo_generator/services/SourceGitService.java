@@ -17,7 +17,7 @@ public class SourceGitService {
     private String directory;
 
     public List<String> getAllRepositories(Remote remote) {
-        return remote.getGitApi().getAllCloudRepositories();
+        return remote.getGitApi().getAllRemoteRepositories();
     }
 
     public void updateRepository(String repoName, Remote remote) {

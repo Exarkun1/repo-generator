@@ -36,7 +36,7 @@ public class GithubApi extends AbstractGitApi {
     }
 
     @Override
-    public List<String> getAllCloudRepositories() {
+    public List<String> getAllRemoteRepositories() {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBasicAuth(username, password);
@@ -56,7 +56,7 @@ public class GithubApi extends AbstractGitApi {
     }
 
     @Override
-    public void createCloudRepository(String repoName) {
+    public void createRemoteRepository(String repoName) {
         throw new UnsupportedOperationException();
     }
 

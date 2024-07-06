@@ -36,12 +36,12 @@ public class BitbucketApi extends AbstractGitApi {
     }
 
     @Override
-    public List<String> getAllCloudRepositories() {
+    public List<String> getAllRemoteRepositories() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void createCloudRepository(String repoName) {
+    public void createRemoteRepository(String repoName) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(username, password);
         headers.setContentType(MediaType.APPLICATION_JSON);

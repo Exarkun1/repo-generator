@@ -28,7 +28,7 @@ public class TargetGitService {
         try(Git git = Git.open(repoPath)) {
             List<String> services = git.remoteList().call().stream().map(RemoteConfig::getName).toList();
             if(!services.contains(remote.getRemoteName())) {
-                gitApi.createCloudRepository(repoName);
+                gitApi.createRemoteRepository(repoName);
                 gitApi.addRemote(repoName, repoPath);
             }
             gitApi.pushRepository(repoPath);

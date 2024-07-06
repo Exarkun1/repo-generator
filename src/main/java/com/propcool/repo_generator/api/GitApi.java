@@ -9,8 +9,8 @@ import java.util.List;
  * остальные методы работают с JGit, то есть с git операциями
  * */
 public interface GitApi {
-    List<String> getAllCloudRepositories();
-    void createCloudRepository(String repoName);
+    List<String> getAllRemoteRepositories();
+    void createRemoteRepository(String repoName);
     void cloneRepository(String repoName, File repoPath);
     void pullRepository(File repoPath);
     void addRemote(String repoName, File repoPath);

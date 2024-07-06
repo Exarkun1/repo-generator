@@ -3,8 +3,6 @@ package com.propcool.repo_generator.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
 import com.propcool.repo_generator.utils.Remote;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.web.client.RestTemplate;
 
