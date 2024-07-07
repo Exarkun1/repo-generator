@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.stream.Stream;
+
 @Getter
 @RequiredArgsConstructor
 public enum Remote {
@@ -14,4 +16,8 @@ public enum Remote {
 
     @Setter
     private GitApi gitApi;
+
+    public static Remote getByRemoteName(String remoteName) {
+        return Stream.of(values()).filter(remote -> remote.getRemoteName().equals(remoteName)).findAny().orElseThrow();
+    }
 }
