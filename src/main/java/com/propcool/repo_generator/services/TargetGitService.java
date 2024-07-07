@@ -38,7 +38,14 @@ public class TargetGitService {
     }
 
     public void updateAllRepositories(Remote remote) {
-        Stream.of(Objects.requireNonNull(new File(directory).listFiles()))
-                .map(File::getName).forEach(repoName -> updateRepository(repoName, remote));
+        localRepoNames().forEach(repoName -> updateRepository(repoName, remote));
+    }
+
+    public boolean containsLocalRepository(String repoName) {
+        return localRepoNames().toList().contains(repoName);
+    }
+
+    private Stream<String> localRepoNames() {
+        return Stream.of(Objects.requireNonNull(new File(directory).listFiles())).map(File::getName);
     }
 }

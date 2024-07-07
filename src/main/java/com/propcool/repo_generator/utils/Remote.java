@@ -18,6 +18,10 @@ public enum Remote {
     private GitApi gitApi;
 
     public static Remote getByRemoteName(String remoteName) {
-        return Stream.of(values()).filter(remote -> remote.getRemoteName().equals(remoteName)).findAny().orElseThrow();
+        return Stream.of(values()).filter(remote -> remote.getRemoteName().equals(remoteName)).findAny().orElse(null);
+    }
+
+    public static boolean containsByRemoteName(String remoteName) {
+        return getByRemoteName(remoteName) != null;
     }
 }

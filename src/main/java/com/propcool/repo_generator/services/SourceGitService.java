@@ -36,4 +36,8 @@ public class SourceGitService {
             updateRepository(repoName, remote);
         }
     }
+
+    public boolean containsRemoteRepository(Remote remote, String repoName) {
+        return getAllRepositories(remote).contains(repoName);
+    }
 }
