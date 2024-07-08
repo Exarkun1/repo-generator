@@ -15,4 +15,5 @@ public interface GitApi {
     void pullRepository(File repoPath);
     void addRemote(String repoName, File repoPath);
     void pushRepository(File repoPath);
+    List<String> remoteList(File repoPath);
 }

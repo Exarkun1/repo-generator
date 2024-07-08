@@ -3,10 +3,7 @@ package com.propcool.repo_generator.utils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.URIish;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.*;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -75,6 +72,14 @@ public class GitUtil {
             }
             removeNonExistBranchesOnRemote(git, repoPath, remoteName, cp);
         } catch (GitAPIException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<String> remoteList(File repoPath) {
+        try(Git git = Git.open(repoPath)) {
+            return git.remoteList().call().stream().map(RemoteConfig::getName).toList();
+        } catch (IOException | GitAPIException e) {
             throw new RuntimeException(e);
         }
     }

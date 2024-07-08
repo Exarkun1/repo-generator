@@ -7,6 +7,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Класс с реализацией методов взаимодействующих с JGit,
@@ -50,6 +51,11 @@ public abstract class AbstractGitApi implements GitApi {
     public void pushRepository(File repoPath) {
         CredentialsProvider cp = credentialsProvider();
         gitUtil.pushRepository(repoPath, remoteName(), cp);
+    }
+
+    @Override
+    public List<String> remoteList(File repoPath) {
+        return gitUtil.remoteList(repoPath);
     }
 
     protected String remoteName() {

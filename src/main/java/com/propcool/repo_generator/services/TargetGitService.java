@@ -25,16 +25,12 @@ public class TargetGitService {
     public void updateRepository(String repoName, Remote remote) {
         File repoPath = new File(directory + "/" + repoName);
         GitApi gitApi = remote.getGitApi();
-        try(Git git = Git.open(repoPath)) {
-            List<String> services = git.remoteList().call().stream().map(RemoteConfig::getName).toList();
-            if(!services.contains(remote.getRemoteName())) {
-                gitApi.createRemoteRepository(repoName);
-                gitApi.addRemote(repoName, repoPath);
-            }
-            gitApi.pushRepository(repoPath);
-        } catch (IOException | GitAPIException e) {
-            throw new RuntimeException(e);
+        List<String> services = gitApi.remoteList(repoPath);
+        if(!services.contains(remote.getRemoteName())) {
+            gitApi.createRemoteRepository(repoName);
+            gitApi.addRemote(repoName, repoPath);
         }
+        gitApi.pushRepository(repoPath);
     }
 
     public void updateAllRepositories(Remote remote) {
@@ -42,10 +38,11 @@ public class TargetGitService {
     }
 
     public boolean containsLocalRepository(String repoName) {
-        return localRepoNames().toList().contains(repoName);
+        return localRepoNames().contains(repoName);
     }
 
-    private Stream<String> localRepoNames() {
-        return Stream.of(Objects.requireNonNull(new File(directory).listFiles())).map(File::getName);
+    private List<String> localRepoNames() {
+        return Stream.of(Objects.requireNonNull(new File(directory).listFiles()))
+                .map(File::getName).toList();
     }
 }
