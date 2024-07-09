@@ -1,5 +1,7 @@
 package com.propcool.repo_generator.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.propcool.repo_generator.utils.GitUtil;
 import com.propcool.repo_generator.utils.Remote;
@@ -28,7 +30,7 @@ public class BitbucketApi extends AbstractGitApi {
     @Value("${bitbucket.workspace}")
     private String workspace;
 
-    private static final String CREATE_REPO_URL = "https://api.bitbucket.org/2.0/repositories";
+    private static final String REPO_URL = "https://api.bitbucket.org/2.0/repositories";
 
     @Autowired
     public BitbucketApi(GitUtil gitUtil, RestTemplate restTemplate, ObjectMapper objectMapper) {
@@ -37,7 +39,23 @@ public class BitbucketApi extends AbstractGitApi {
 
     @Override
     public List<String> getAllRemoteRepositories() {
-        throw new UnsupportedOperationException();
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth(username, password);
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    reposUrl(),
+                    HttpMethod.GET,
+                    request,
+                    String.class
+            );
+            String responseBody = response.getBody();
+            JsonNode root = objectMapper.readTree(responseBody);
+            return root.findValuesAsText("full_name").stream()
+                    .map(fullName -> fullName.replaceAll("\\w+/", "")).toList();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -67,6 +85,10 @@ public class BitbucketApi extends AbstractGitApi {
     }
 
     protected String createRepoUrl(String repoName) {
-        return CREATE_REPO_URL + "/" + workspace + "/" + repoName;
+        return REPO_URL + "/" + workspace + "/" + repoName;
+    }
+
+    protected String reposUrl() {
+        return REPO_URL + "/" + workspace;
     }
 }

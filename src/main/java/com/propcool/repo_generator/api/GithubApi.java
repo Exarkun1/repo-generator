@@ -8,14 +8,13 @@ import com.propcool.repo_generator.utils.Remote;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Класс для взаимодействия с api облачного сервиса github
@@ -28,7 +27,7 @@ public class GithubApi extends AbstractGitApi {
     @Value("${github.password}")
     private String password;
 
-    private static final String ALL_REPOS_URL = "https://api.github.com/user/repos";
+    private static final String REPO_URL = "https://api.github.com/user/repos";
 
     @Autowired
     public GithubApi(GitUtil gitUtil, RestTemplate restTemplate, ObjectMapper objectMapper) {
@@ -42,7 +41,7 @@ public class GithubApi extends AbstractGitApi {
             headers.setBasicAuth(username, password);
             HttpEntity<String> request = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(
-                    ALL_REPOS_URL,
+                    REPO_URL,
                     HttpMethod.GET,
                     request,
                     String.class
@@ -57,7 +56,19 @@ public class GithubApi extends AbstractGitApi {
 
     @Override
     public void createRemoteRepository(String repoName) {
-        throw new UnsupportedOperationException();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(username, password);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, Object> jsonBody = new HashMap<>();
+        jsonBody.put("name", repoName);
+        jsonBody.put("private", true);
+        var request = new HttpEntity<>(jsonBody, headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                REPO_URL,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
     }
 
     @Override
