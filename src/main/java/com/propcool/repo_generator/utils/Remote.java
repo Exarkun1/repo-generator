@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Getter
@@ -28,5 +30,13 @@ public enum Remote {
 
     public static boolean containsByRemoteName(String remoteName) {
         return getByRemoteName(remoteName) != null;
+    }
+
+    public static List<String> getAllNames() {
+        List<String> remoteNames = new ArrayList<>();
+        for(var remote : values()) {
+            remoteNames.add(remote.remoteName);
+        }
+        return remoteNames;
     }
 }

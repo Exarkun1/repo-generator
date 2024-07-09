@@ -20,17 +20,18 @@ import java.util.List;
 @Tag(name = "Git контроллер", description = "Контроллер для переноса репозиториев с одного облачного сервиса на другой")
 @RestController
 @RequestMapping("/git")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class GitController {
     private final SourceGitService sourceGitService;
 
     private final TargetGitService targetGitService;
 
-    @Operation(summary = "Получение всех репозитории с сервиса источника")
-    @GetMapping("/repositories")
-    public List<String> repositories(@RequestParam(name = "service") String service) {
+    @Operation(summary = "Получение всех репозитории из сервиса источника")
+    @GetMapping("/repos/cloud")
+    public List<String> cloudRepositories(@RequestParam(name = "service") String service) {
         throwIfServiceIsNotExist(service);
-        return sourceGitService.getAllRepositories(Remote.getByRemoteName(service));
+        return sourceGitService.getAllRemoteRepositories(Remote.getByRemoteName(service));
     }
 
     @Operation(summary = "Обновление локального репозитория")
@@ -39,14 +40,20 @@ public class GitController {
         throwIfServiceIsNotExist(dto.service());
         Remote remote = Remote.getByRemoteName(dto.service());
         throwIfSourceRepoIsNotExist(remote, dto.repoName());
-        sourceGitService.updateRepository(dto.repoName(), remote);
+        sourceGitService.updateLocalRepository(dto.repoName(), remote);
     }
 
     @Operation(summary = "Обновление всех локальных репозиториев")
     @PostMapping("/update-all/local")
     public void updateAllLocalRepositories(@RequestParam(name = "service") String service) {
         throwIfServiceIsNotExist(service);
-        sourceGitService.updateAllRepositories(Remote.getByRemoteName(service));
+        sourceGitService.updateAllLocalRepositories(Remote.getByRemoteName(service));
+    }
+
+    @Operation(summary = "Получение всех репозитории из локального хранилища")
+    @GetMapping("/repos/local")
+    public List<String> localRepositories() {
+        return targetGitService.getAllLocalRepositories();
     }
 
     @Operation(summary = "Обновление репозитория в целевом сервисе")
@@ -54,14 +61,20 @@ public class GitController {
     public void updateCloudRepository(@RequestBody UpdateDto dto) {
         throwIfServiceIsNotExist(dto.service());
         throwIfLocalRepoNotExist(dto.repoName());
-        targetGitService.updateRepository(dto.repoName(), Remote.getByRemoteName(dto.service()));
+        targetGitService.updateRemoteRepository(dto.repoName(), Remote.getByRemoteName(dto.service()));
     }
 
     @Operation(summary = "Обновление всех репозиториев в целевом сервисе")
     @PostMapping("/update-all/cloud")
     public void updateAllCloudRepositories(@RequestParam(name = "service") String service) {
         throwIfServiceIsNotExist(service);
-        targetGitService.updateAllRepositories(Remote.getByRemoteName(service));
+        targetGitService.updateAllRemoteRepositories(Remote.getByRemoteName(service));
+    }
+
+    @Operation(summary = "Получение всех облачных сервисов для хранения репозиториев")
+    @GetMapping("/services")
+    public List<String> services() {
+        return Remote.getAllNames();
     }
 
     @ExceptionHandler
