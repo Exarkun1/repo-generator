@@ -38,12 +38,12 @@ public class GitUtil {
 
     public void pullRepository(File repoPath, String remoteName, CredentialsProvider cp) {
         try(Git git = Git.open(repoPath)) {
-            removeNonExistBranches(git, repoPath, remoteName, cp);
             git.pull()
                     .setCredentialsProvider(cp)
                     .setRemote(remoteName)
                     .call();
             resolveBranches(git, repoPath, remoteName, cp);
+            removeNonExistBranches(git, repoPath, remoteName, cp);
         } catch (GitAPIException | IOException e) {
             throw new RuntimeException(e);
         }
